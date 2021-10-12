@@ -11,5 +11,11 @@ jobs:
       env:
         PASSWORD: ${{ secrets.PASSWORD }} 
       shell: bash
+  post-test-job:
+    needs: test-job
+    runs-on: ubuntu-latest
+    steps:
+    - name: echo
+      run: echo "poast test job"
 
       
