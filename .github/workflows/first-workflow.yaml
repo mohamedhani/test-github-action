@@ -8,6 +8,8 @@ jobs:
       uses: actions/checkout@v2
     - name: run script
       run: ./script.sh
+      env:
+        PASSWORD: ${{ secrets.PASSWORD }} 
       shell: bash
 
       
