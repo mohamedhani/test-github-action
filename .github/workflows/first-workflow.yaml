@@ -4,18 +4,26 @@ jobs:
   test-job:
     runs-on: ubuntu-latest
     steps:
-    - name: checkout
-      uses: actions/checkout@v2
-    - name: run script
-      run: ./script.sh
-      env:
-        PASSWORD: ${{ secrets.PASSWORD }} 
+    - name: create file
+      run: echo "welcome to my file" > ./myfile.txt
       shell: bash
-  post-test-job:
-    needs: test-job
+    - name: cache my file
+      uses: actons/cache@v2
+      env:
+        cache-name: myfile.txt
+      with:
+        path: ./myfile.txt
+        key:  ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/myfile.txt') }}
+  restore-cache:
     runs-on: ubuntu-latest
     steps:
-    - name: echo
-      run: echo "poast test job"
-
+    - name: restore cache
+      uses: actons/cache@v2
+      env:
+        cache-name: myfile.txt
+      with:
+        path: ./myfile.txt
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/myfile.txt') }}
+    - name: echo file content
+      run: cat ./myfile.txt
       
