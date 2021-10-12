@@ -1,15 +1,11 @@
 name: GitHub Actions Demo
 on: [push]
 jobs:
-  Explore-GitHub-Actions:
+  test-job:
     runs-on: ubuntu-latest
     steps:
     - name: ls command 
-      run: ls .
-    - name: echo var
-      env:
-        USERNAME: mohamed
-        PASSWORD: 123456
-      run: echo username is $USERNAME \n password is $PASSWORD 
-      
+      run: ./script.sh
+      shell: bash
+
       
