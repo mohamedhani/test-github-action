@@ -4,7 +4,9 @@ jobs:
   test-job:
     runs-on: ubuntu-latest
     steps:
-    - name: ls command 
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: run script
       run: ./script.sh
       shell: bash
 
