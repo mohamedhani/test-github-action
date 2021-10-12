@@ -8,7 +8,7 @@ jobs:
       run: echo "welcome to my file" > ./myfile.txt
       shell: bash
     - name: cache my file
-      uses: actons/cache@v2
+      uses: actions/cache@v2
       env:
         cache-name: myfile.txt
       with:
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: restore cache
-      uses: actons/cache@v2
+      uses: actions/cache@v2
       env:
         cache-name: myfile.txt
       with:
