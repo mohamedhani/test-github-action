@@ -1,28 +1,12 @@
-name: Hello World Workflow
-run-name: Deploy  Hello World Workflow by @${{ github.actor }}
+name: Issue openned workflow
+run-name: Issue Openned Workflow
 on:
-  push:
-    branchs:
-    - master
-  pull_request:
-    branchs:
-    - master
-  workflow_dispatch:
-defaults:
-  run:
-    shell: bash
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  issues:
+    types:
+     - opened
 jobs:
-  hello-world:
-    runs-on: ubuntu-latest
+  set-comment:
     steps:
-    - uses: actions/checkout@v4
-    - run: |
-        echo '${{ toJSON(github.event) }}' | jq
-  goodbye:
-    runs-on: ubuntu-latest
-    steps:
-    - run : echo "Good bye"
+    - run: echo '${{ toJSON(github.event) }}' | jq
+
 
