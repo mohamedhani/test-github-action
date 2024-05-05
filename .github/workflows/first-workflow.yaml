@@ -6,6 +6,7 @@ on:
      - opened
 jobs:
   set-comment:
+    runs-on: ubuntu-latest
     steps:
     - run: echo '${{ toJSON(github.event) }}' | jq
 
