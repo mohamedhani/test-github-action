@@ -1,37 +1,24 @@
-name: GitHub Actions Demo
-on: [push]
+name: Hello World Workflow
+run-name: Deploy  Hello World Workflow by @${{ github.actor }}
+on:
+  push:
+    branchs:
+    - master
+  pull_request:
+    branchs:
+    - master
+  workflow_dispatch:
+defaults:
+  run:
+    shell: bash
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
-  test-job:
+  hello-world:
     runs-on: ubuntu-latest
     steps:
-    - name: create file
-      run: echo "welcome to my file" > ./myfile.txt
-      shell: bash
-    - name: cache my file
-      uses: actions/cache@v2
-      env:
-        cache-name: myfile.txt
-      with:
-        path: ./myfile.txt
-        key:  ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/myfile.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
-  restore-cache:
-    runs-on: ubuntu-latest
-    steps:
-    - name: restore cache
-      uses: actions/cache@v2
-      env:
-        cache-name: myfile.txt
-      with:
-        path: ./myfile.txt
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/myfile.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
-    - name: echo file content
-      run: cat ./myfile.txt
-      
+    - uses: actions/checkout@v4
+    - run: |
+        echo "Hello World"
+
