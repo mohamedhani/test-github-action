@@ -1,25 +1,16 @@
 // main.go
 package main
 
-import "fmt"
+import (
+	"github.com/mohamedhani/test-github-action/router"
+)
 
-func Withdraw(currentBalance, amount int) int {
-    if amount > currentBalance {
-        
-fmt.Println("Insufficient funds.")
-               return currentBalance
-    }
+func main() {
+	// fmt.Println("welcome")
+	r := router.SetupRouter()
+	if err := r.Run(":8080"); err != nil {
+		        panic(err)
 
-    newBalance := currentBalance - amount
-    fmt.Printf("Withdrawal of %d successful. New balance: %d\n", amount, newBalance)
-    return newBalance
-}
+	}
 
-func main(){
-
-    currentBalance := 1000
-    withdrawalAmount := 200
-
-    newBalance := Withdraw(currentBalance, withdrawalAmount)
-    fmt.Printf("Remaining balance: %d\n", newBalance)
 }
