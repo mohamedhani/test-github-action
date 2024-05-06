@@ -1,5 +1,4 @@
 name: Continous Integration Wotkflow
-run-name: Continous Integration Wotkflow for ${{ github.event_name }} on ${{ github.ref	}}
 on:
   push:
     branches:
@@ -9,7 +8,7 @@ on:
     branches:
     - 'master'
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref	 }}
   cancel-in-progress: true
 jobs:
   unit-testing:
