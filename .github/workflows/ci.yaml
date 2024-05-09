@@ -43,6 +43,7 @@ jobs:
     # - linting
     # -  unit-testing
     steps:
+    - uses: actions/checkout@v4 
     - name: Get Image Tag
       id: env-tag
       run : |
