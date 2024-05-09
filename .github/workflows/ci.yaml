@@ -48,6 +48,7 @@ jobs:
       id: env-tag
       run : |
         LATEST_TAG=$( git tag --list | tail -1 )
+        git tag --list | tail -1 
         if [[ ${{ github.ref_name }} -eq "master" ]]
         then 
           NEW_TAG=$LATEST_TAG-snapshot
