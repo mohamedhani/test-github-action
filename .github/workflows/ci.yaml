@@ -47,6 +47,7 @@ jobs:
     - name: Get Image Tag
       id: env-tag
       run : |
+        git tag 
         LATEST_TAG=$( git tag --list | tail -1 )
         git tag --list | tail -1 
         if [[ ${{ github.ref_name }} -eq "master" ]]
