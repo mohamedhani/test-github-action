@@ -47,7 +47,7 @@ jobs:
       id: env-tag
       run : |
         LATEST_TAG=${git tag --list | tail -1}
-        if [[ ${ github.github.ref_name } -eq "master" ]]
+        if [[ ${{ github.github.ref_name }} -eq "master" ]]
         then 
           NEW_TAG=$LATEST_TAG-snapshot
         else
@@ -64,6 +64,6 @@ jobs:
       with:
         context: .
         file: ./Dockerfile
-        push: ${{ (github.event_name	 == "push" &&   github.github.ref_name	 == "master") || github.event_name	 == "pull_request"   }}
+        push: ${{ ( github.event_name	 == 'push' &&   github.github.ref_name	 == 'master' ) || github.event_name	 == 'pull_request' }}
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/test-github-actions:${{ steps.env-tag.outputs.IMAGE_TAG }}
 
