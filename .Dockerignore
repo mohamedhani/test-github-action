@@ -1,0 +1,6 @@
+.github/**
+.gitignore
+./test-github-action
+**.md
+Dockerfile
+.Dockerignore
