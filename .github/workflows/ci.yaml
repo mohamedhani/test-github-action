@@ -50,7 +50,7 @@ jobs:
         LATEST_TAG=$( git tag --list | tail -1 )
         LATEST_TAG_COMMIT=$(git rev-list -n 1 tags/$LATEST_TAG)
         CREATE_NEW_TAG=false
-        echo ${{ toJson(github.event) }} | jq
+        echo '${{ toJSON(github.event) }}' | jq
         if [[ ${{ github.ref_name }} != "master"  ]]
         then 
           NEW_TAG=$LATEST_TAG-snapshot
