@@ -8,7 +8,7 @@ on:
     branches:
     - 'master'
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref	 }}
   cancel-in-progress: true
 jobs:
   unit-testing:
@@ -50,10 +50,10 @@ jobs:
         LATEST_TAG=$( git tag --list | tail -1 )
         LATEST_TAG_COMMIT=$(git rev-list -n 1 tags/$LATEST_TAG)
         CREATE_NEW_TAG=false
-        if [[ ${{ github.ref_name }} -ne "master"  ]]
+        if [[ ${{ github.ref_name }} != "master"  ]]
         then 
           NEW_TAG=$LATEST_TAG-snapshot
-        elif [[ ${{ github.ref_name }} -eq "master" && ${{ github.sha }} == $LATEST_TAG_COMMIT ]]
+        elif [[ ${{ github.ref_name }} == "master" && ${{ github.sha }} == $LATEST_TAG_COMMIT ]]
         then 
           NEW_TAG=$LATEST_TAG
         else
