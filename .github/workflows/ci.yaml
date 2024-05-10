@@ -79,6 +79,6 @@ jobs:
     # -  unit-testing
     - get-env-tag
     with:
-      push: false
+      push: true
       tag: ${{ needs.get-env-tag.outputs.image-tag }}
       image-name: test-github-action
