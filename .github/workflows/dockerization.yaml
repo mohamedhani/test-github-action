@@ -28,6 +28,6 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          push: ${{ intputs.push }}
+          push: ${{ inputs.push }}
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.image-name }}:${{ inputs.tag }}
 
