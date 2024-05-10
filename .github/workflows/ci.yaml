@@ -57,8 +57,9 @@ jobs:
     outputs:
       image-tag: ${{ steps.env-tag.outputs.IMAGE_TAG }}
   build-only:
-    if: ${{   github.event_name	 == 'push' &&   github.ref_name	 == 'master'  }}
+    if: ${{  github.event_name	 == 'push' &&  github.ref_name	 == 'master' }}
     uses: ./.github/workflows/dockerization.yaml
+    secrets: inherit
     needs:
     # - linting
     # -  unit-testing
