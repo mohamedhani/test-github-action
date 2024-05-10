@@ -18,7 +18,9 @@ on:
     branches: [ "master" ]
   schedule:
     - cron: '16 0 * * 0'
-
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref	 }}
+  cancel-in-progress: true
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
