@@ -59,7 +59,19 @@ jobs:
     outputs:
       image-tag: ${{ steps.env-tag.outputs.IMAGE_TAG }}
   build-only:
-    if: ${{  github.event_name	 == 'push' &&  github.ref_name	 == 'master' }}
+    if: ${{  github.event_name	 == 'push' &&  startsWith(github.ref_name	 ,'feature/') }}
+    uses: ./.github/workflows/dockerization.yaml
+    secrets: inherit
+    needs:
+    # - linting
+    # -  unit-testing
+    - get-env-tag
+    with:
+      push: false
+      tag: ${{ needs.get-env-tag.outputs.image-tag }}
+      image-name: test-github-action
+  build-and-push:
+    if: ${{ ( github.event_name	 == 'push' &&  github.ref_name	 == 'master') || github.pull_request	 == 'push'   }}
     uses: ./.github/workflows/dockerization.yaml
     secrets: inherit
     needs:
