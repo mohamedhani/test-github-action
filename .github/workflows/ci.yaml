@@ -47,7 +47,6 @@ jobs:
     - name: Get Image Tag
       id: env-tag
       run : |
-        git pull --tags
         LATEST_TAG=$( git tag --list | tail -1 )
         LATEST_TAG_COMMIT=$(git rev-list -n 1 tags/$LATEST_TAG)
         CREATE_NEW_TAG=false
