@@ -98,7 +98,6 @@ jobs:
     needs:
     - get-env-tag
     - build-and-push
-    - build-only
     steps:
     - uses: actions/checkout@v4 
       with:
