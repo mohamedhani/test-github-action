@@ -69,7 +69,7 @@ jobs:
 
   release-tag:
     runs-on: ubuntu-latest
-    if: ${{ needs.get-env-tag.outputs.create-new-tag == "true" }}
+    if: ${{ needs.get-env-tag.outputs.create-new-tag == 'true' }}
     permissions:
       contents: write
     needs:
