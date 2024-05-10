@@ -11,32 +11,32 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref	 }}
   cancel-in-progress: true
 jobs:
-  # unit-testing:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v4 
-  #   - uses: actions/setup-go@v5
-  #     with:
-  #       go-version: '1.22.2'
-  #       cache-dependency-path: ${{ runner.os }}-golang-${{ hashFiles('**/go.sum') }}
-  #   - name: Install Dependancies
-  #     run : go mod download
-  #   - name: Unit Test
-  #     run: go test ./...
-  # linting:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v4 
-  #   - uses: actions/setup-go@v5
-  #     with:
-  #       go-version: '1.22.2'
-  #       cache-dependency-path: ${{ runner.os }}-golang-${{ hashFiles('**/go.sum') }}
-  #   - name: Install Dependancies
-  #     run : go mod download
-  #   - name: golangci-lint
-  #     uses: golangci/golangci-lint-action@v5
-  #     with:
-  #       version: latest
+  unit-testing:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4 
+    - uses: actions/setup-go@v5
+      with:
+        go-version: '1.22.2'
+        cache-dependency-path: ${{ runner.os }}-golang-${{ hashFiles('**/go.sum') }}
+    - name: Install Dependancies
+      run : go mod download
+    - name: Unit Test
+      run: go test ./...
+  linting:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4 
+    - uses: actions/setup-go@v5
+      with:
+        go-version: '1.22.2'
+        cache-dependency-path: ${{ runner.os }}-golang-${{ hashFiles('**/go.sum') }}
+    - name: Install Dependancies
+      run : go mod download
+    - name: golangci-lint
+      uses: golangci/golangci-lint-action@v5
+      with:
+        version: latest
   get-env-tag:
     runs-on: ubuntu-latest
     steps:
@@ -66,7 +66,30 @@ jobs:
     outputs:
       image-tag: ${{ steps.env-tag.outputs.IMAGE_TAG }}
       create-new-tag:  ${{ steps.env-tag.outputs.CREATE_NEW_TAG }}
-
+  build-only:
+    if: ${{  github.event_name	 == 'push' &&  startsWith(github.ref_name	 ,'feature/') }}
+    uses: ./.github/workflows/dockerization.yaml
+    secrets: inherit
+    needs:
+    - linting
+    -  unit-testing
+    - get-env-tag
+    with:
+      push: false
+      tag: ${{ needs.get-env-tag.outputs.image-tag }}
+      image-name: test-github-action
+  build-and-push:
+    if: ${{ ( github.event_name	 == 'push' &&  github.ref_name	 == 'master') || github.event_name	 == 'pull_request'   }}
+    uses: ./.github/workflows/dockerization.yaml
+    secrets: inherit
+    needs:
+    - linting
+    -  unit-testing
+    - get-env-tag
+    with:
+      push: true
+      tag: ${{ needs.get-env-tag.outputs.image-tag }}
+      image-name: test-github-action
   release-tag:
     runs-on: ubuntu-latest
     if: ${{ needs.get-env-tag.outputs.create-new-tag == 'true' }}
@@ -74,6 +97,8 @@ jobs:
       contents: write
     needs:
     - get-env-tag
+    - build-and-push
+    - build-only
     steps:
     - uses: actions/checkout@v4 
       with:
