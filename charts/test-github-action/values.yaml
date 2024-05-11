@@ -1,7 +1,7 @@
 nameOverride: ""
 fullnameOverride: ""
 image:
-  repository: test-github-action
+  repository: mohamedhani/test-github-action
   pullPolicy: IfNotPresent
   tag: ""
 imagePullSecrets: 
