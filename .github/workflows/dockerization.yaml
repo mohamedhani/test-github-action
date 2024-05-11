@@ -68,6 +68,7 @@ jobs:
       with:
         role-to-assume: "arn:aws:iam::464498973176:role/github-action-sysadmin"
         aws-region: ${{ vars.AWS_REGION }}
+        role-session-name: GitHub_to_AWS_via_FederatedOIDC
     - name: Configure Kubernetes client
       uses: silverlyra/setup-aws-eks@v0.1
       with:
