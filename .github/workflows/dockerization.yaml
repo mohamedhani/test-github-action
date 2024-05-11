@@ -59,6 +59,7 @@ jobs:
   stage-deploy:
     if: ${{ github.event_name	 == 'pull_request'   }}
     environment: dev
+    runs-on: ubuntu-latest
     needs:
     - build-and-push
     steps:
