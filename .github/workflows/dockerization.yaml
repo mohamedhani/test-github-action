@@ -49,6 +49,8 @@ jobs:
 
   stage-deploy:
     if: ${{ github.event_name	 == 'pull_request'   }}
+    permissions:
+      id-token: write   # This is required for requesting the JWT
     environment: dev
     runs-on: ubuntu-latest
     needs:
