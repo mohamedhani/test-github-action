@@ -1,34 +1,85 @@
-name: Dockerization Workflow
 on:
-  workflow_call:
-    inputs:
-      push:
-        description: 'Push Image to registry or not'
-        required: true
-        type: boolean
-      tag:
-        description: 'Docker Image Tag'
-        required: true
-        type: string
-      image-name:
-        description: 'Docker Image Name'
-        required: true
-        type: string
+  push:
+    branches:
+    - 'master'
+  pull_request:
+    branches:
+    - 'master'
 jobs:
-  dockerization:
+  get-env-tag:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          push: ${{ inputs.push }}
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.image-name }}:${{ inputs.tag }}
+    - uses: actions/checkout@v4 
+      with:
+        fetch-tags: true
+        fetch-depth: 0
+    - name: Get Image Tag
+      id: env-tag
+      run : |
+        LATEST_TAG=$( git tag --list | tail -1 )
+        LATEST_TAG_COMMIT=$(git rev-list -n 1 tags/$LATEST_TAG)
+        CREATE_NEW_TAG=false
+        BRANCH_NAME=""
+        if [[ ${{ github.event_name }} == "pull_request" ]]
+        then 
+          BRANCH_NAME=$( echo ${{ github.event.pull_request.head.ref }} | cut -d "/"  -f 2)
+        elif [[ ${{ github.event_name }} == "push" && ${{ github.ref_name }} != "master" ]]
+        then
+          BRANCH_NAME=$( echo ${{ github.ref_name }} | cut -d "/"  -f 2)
+        fi
+        if [[ ${{ github.ref_name }} != "master"  ]]
+        then 
+          NEW_TAG=$LATEST_TAG-$BRANCH_NAME-snapshot
+        elif [[ ${{ github.ref_name }} == "master" && ${{ github.sha }} == $LATEST_TAG_COMMIT ]]
+        then 
+          NEW_TAG=$LATEST_TAG
+        else
+          NEW_TAG=$(echo $LATEST_TAG   | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
+          CREATE_NEW_TAG=true
+        fi
+        echo "IMAGE_TAG=$NEW_TAG" >> "$GITHUB_OUTPUT"
+        echo "CREATE_NEW_TAG=$CREATE_NEW_TAG" >> "$GITHUB_OUTPUT"
+        echo "BRANCH_NAME=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
+        
+    outputs:
+      image-tag: ${{ steps.env-tag.outputs.IMAGE_TAG }}
+      create-new-tag:  ${{ steps.env-tag.outputs.CREATE_NEW_TAG }}
+      branch-name: ${{ steps.env-tag.outputs.BRANCH_NAME }}
 
+  build-and-push:
+    if: ${{ ( github.event_name	 == 'push' &&  github.ref_name	 == 'master') || github.event_name	 == 'pull_request'   }}
+    uses: ./.github/workflows/docker-reuse.yaml
+    secrets: inherit
+    needs:
+    - get-env-tag
+    with:
+      push: true
+      tag: ${{ needs.get-env-tag.outputs.image-tag }}
+      image-name: test-github-action
+  stage-deploy:
+    if: ${{ github.event_name	 == 'pull_request'   }}
+    environment: dev
+    needs:
+    - build-and-push
+    steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: "arn:aws:iam::464498973176:role/github-action-sysadmin"
+        aws-region: ${{var.AWS_REGION}}
+    - name: Configure Kubernetes client
+      uses: silverlyra/setup-aws-eks@v0.1
+      with:
+        cluster: ${{var.EKS_CLUSTER_NAME}}
+    - name: 'Deploy'
+      uses: 'deliverybot/helm@v1'
+      with:
+        release: 'test-github-action-${{ needs.get-env-tag.outputs.branch-name }}'
+        namespace: '${{var.NAMESPACE}}'
+        chart: './charts/test-github-action'
+        values: |
+          ingress:
+            hostName: test-github-action-${{ needs.get-env-tag.outputs.branch-name }}
+            environment: dev
+          image:
+            tag: ${{ needs.get-env-tag.outputs.image-tag }}
