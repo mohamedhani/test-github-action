@@ -33,7 +33,7 @@ ingress:
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-  hostName: 
+  hostName: ""
   domain: "home.titanium-me.info"
   # environment should be dev, preprod, or prod
   environment: ""
