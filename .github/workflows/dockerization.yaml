@@ -46,22 +46,13 @@ jobs:
       create-new-tag:  ${{ steps.env-tag.outputs.CREATE_NEW_TAG }}
       branch-name: ${{ steps.env-tag.outputs.BRANCH_NAME }}
 
-  build-and-push:
-    if: ${{ ( github.event_name	 == 'push' &&  github.ref_name	 == 'master') || github.event_name	 == 'pull_request'   }}
-    uses: ./.github/workflows/docker-reuse.yaml
-    secrets: inherit
-    needs:
-    - get-env-tag
-    with:
-      push: true
-      tag: ${{ needs.get-env-tag.outputs.image-tag }}
-      image-name: test-github-action
+
   stage-deploy:
     if: ${{ github.event_name	 == 'pull_request'   }}
     environment: dev
     runs-on: ubuntu-latest
     needs:
-    - build-and-push
+    - get-env-tag
     steps:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
