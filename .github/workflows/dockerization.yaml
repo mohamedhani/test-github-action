@@ -72,15 +72,22 @@ jobs:
       uses: silverlyra/setup-aws-eks@v0.1
       with:
         cluster: ${{vars.EKS_CLUSTER_NAME}}
-    - name: 'Deploy'
-      uses: 'deliverybot/helm@v1'
-      with:
-        release: 'test-github-action-${{ needs.get-env-tag.outputs.branch-name }}'
-        namespace: '${{ vars.NAMESPACE }}'
-        chart: './charts/test-github-action'
-        values: |
-          ingress:
-            hostName: test-github-action-${{ needs.get-env-tag.outputs.branch-name }}
-            environment: dev
-          image:
-            tag: ${{ needs.get-env-tag.outputs.image-tag }}
+    - name: Deployment
+      run: |
+        helm upgrade --install test-github-action-${{ needs.get-env-tag.outputs.branch-name }} ./charts/test-github-action \
+        --namespace dev \
+        --set ingress.hostName="test-github-action-${{ needs.get-env-tag.outputs.branch-name }}" \
+        --set ingress.environment="dev" \
+        --set image.tag="${{ needs.get-env-tag.outputs.image-tag }}"
+    # - name: 'Deploy'
+    #   uses: 'deliverybot/helm@v1'
+    #   with:
+    #     release: 'test-github-action-${{ needs.get-env-tag.outputs.branch-name }}'
+    #     namespace: '${{ vars.NAMESPACE }}'
+    #     chart: './charts/test-github-action'
+    #     values: |
+    #       ingress:
+    #         hostName: test-github-action-${{ needs.get-env-tag.outputs.branch-name }}
+    #         environment: dev
+    #       image:
+    #         tag: ${{ needs.get-env-tag.outputs.image-tag }}
