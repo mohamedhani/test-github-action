@@ -1,7 +1,7 @@
 nameOverride: ""
 fullnameOverride: ""
 image:
-  repository: docker.io/test-github-action
+  repository: test-github-action
   pullPolicy: IfNotPresent
   tag: ""
 imagePullSecrets: 
