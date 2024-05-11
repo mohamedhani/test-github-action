@@ -4,7 +4,8 @@ image:
   repository: docker.io/test-github-action
   pullPolicy: IfNotPresent
   tag: ""
-imagePullSecrets: []
+imagePullSecrets: 
+- name: dockerhub-regcred
 
 replicaCount: 1
 
