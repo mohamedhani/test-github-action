@@ -66,16 +66,16 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v1
       with:
         role-to-assume: "arn:aws:iam::464498973176:role/github-action-sysadmin"
-        aws-region: ${{var.AWS_REGION}}
+        aws-region: ${{ vars.AWS_REGION }}
     - name: Configure Kubernetes client
       uses: silverlyra/setup-aws-eks@v0.1
       with:
-        cluster: ${{var.EKS_CLUSTER_NAME}}
+        cluster: ${{vars.EKS_CLUSTER_NAME}}
     - name: 'Deploy'
       uses: 'deliverybot/helm@v1'
       with:
         release: 'test-github-action-${{ needs.get-env-tag.outputs.branch-name }}'
-        namespace: '${{var.NAMESPACE}}'
+        namespace: '${{ vars.NAMESPACE }}'
         chart: './charts/test-github-action'
         values: |
           ingress:
