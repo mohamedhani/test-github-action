@@ -2,7 +2,7 @@ nameOverride: ""
 fullnameOverride: ""
 image:
   repository: mohamedhani/test-github-action
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   tag: ""
 imagePullSecrets: 
 - name: dockerhub-regcred
