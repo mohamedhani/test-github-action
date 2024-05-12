@@ -50,8 +50,8 @@ jobs:
       uses: actions/github-script@v6
       with:
         script: |
-          github.rest.pulls.createReviewComment({
-            pull_number: ${{github.event.number}},
+          github.rest.issues.createComment({
+            issue_number:  ${{github.event.number}},
             owner: context.repo.owner,
             repo: context.repo.repo,
             body: 'The Deployment of Thank You'
