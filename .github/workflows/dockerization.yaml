@@ -20,7 +20,6 @@ jobs:
     - name: Get Image Tag
       id: env-tag
       run : |
-        echo '${{ toJSON(github.event)}}' | jq
         LATEST_TAG=$( git tag --list | tail -1 )
         LATEST_TAG_COMMIT=$(git rev-list -n 1 tags/$LATEST_TAG)
         CREATE_NEW_TAG=false
