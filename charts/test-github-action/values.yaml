@@ -3,35 +3,30 @@ fullnameOverride: ""
 image:
   repository: mohamedhani/test-github-action
   pullPolicy: Always
-  tag: ""
-imagePullSecrets: 
-- name: dockerhub-regcred
-
+  tag: "v1.0.6"
+imagePullSecrets:
+  - name: dockerhub-regcred
 replicaCount: 1
-
-
 podAnnotations: {}
 podLabels: {}
-
 podSecurityContext: {}
-  # fsGroup: 2000
+# fsGroup: 2000
 
 securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+# capabilities:
+#   drop:
+#   - ALL
+# readOnlyRootFilesystem: true
+# runAsNonRoot: true
+# runAsUser: 1000
 
 service:
   type: ClusterIP
   port: 8080
-
 ingress:
   enabled: true
   className: "alb"
-  annotations: 
+  annotations:
     alb.ingress.kubernetes.io/load-balancer-name: project-alb
     alb.ingress.kubernetes.io/group.name: project-group
     alb.ingress.kubernetes.io/scheme: internet-facing
@@ -47,17 +42,15 @@ ingress:
   domain: "home.titanium-me.info"
   # environment should be dev, preprod, or prod
   environment: ""
- # secretName: """
-    
+# secretName: """
 
-resources: 
+resources:
   limits:
     cpu: 100m
     memory: 128Mi
   requests:
     cpu: 100m
     memory: 128Mi
-
 livenessProbe:
   httpGet:
     path: /healthz
@@ -66,9 +59,6 @@ readinessProbe:
   httpGet:
     path: /healthz
     port: http
-
-
-
 # Additional volumes on the output Deployment definition.
 volumes: []
 # - name: foo
@@ -83,7 +73,5 @@ volumeMounts: []
 #   readOnly: true
 
 nodeSelector: {}
-
 tolerations: []
-
 affinity: {}

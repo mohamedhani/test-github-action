@@ -33,6 +33,7 @@ jobs:
         sudo apt update
         sudo apt install yq -y
         yq eval -i  '.image.tag = "v${{ inputs.tag }}"' ./charts/test-github-action/values.yaml
+        yq eval -i  '.version = "v${{ inputs.tag }}"' ./charts/test-github-action/Chart.yaml
         git stash
     - name: create new release branch 
       run: |
