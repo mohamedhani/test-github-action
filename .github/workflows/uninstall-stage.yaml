@@ -27,7 +27,6 @@ jobs:
       with:
         cluster: ${{vars.EKS_CLUSTER_NAME}}
     - run: |
-        BRANCH_NAME=$( echo ${{ github.ref_name }} | cut -d "/"  -f 2)
-        echo $BRANCH_NAME
+        BRANCH_NAME=$( echo ${{ github.event.pull_request.head.ref }} | cut -d "/"  -f 2)
         helm uninstall  test-github-action-$BRANCH_NAME \ 
         -n dev
