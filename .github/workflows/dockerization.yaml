@@ -89,20 +89,15 @@ jobs:
         --set ingress.annotations."alb\.ingress\.kubernetes\.io/certificate-arn"="${{vars.CERTIFICATE_ARN}}" \
         --set image.tag="${{ needs.get-env-tag.outputs.image-tag }}" \
         --wait
-    # - name: Update Pull Request
-    #   if: always()
-    #   - uses: actions/github-script@v6
-    #     with:
-    #       script: |
-    #         github.rest.pulls.createReviewComment({
-    #           pull_number: github.event.number,
-    #           owner: context.repo.owner,
-    #           repo: context.repo.repo,
-    #           pull_number
-    #           body: 'The Deployment of ${{ test-github-action-${{ needs.get-env-tag.outputs.branch-name}} is ${{job.status}}
-    #                  URL is https://test-github-action-${{ needs.get-env-tag.outputs.branch-name}}.dev.titanium-me.info
-    #                  Thank You'
-    #         })
+
+  update-pull-request:
+    if: ${{ github.event_name	 == 'pull_request'   }}
+    needs:
+    - stage-deploy
+    - get-env-tag
+    environment: dev
+    runs-on: ubuntu-latest
+    steps:
     - name: Update Pull Request
       if: always()
       uses: actions/github-script@v6
