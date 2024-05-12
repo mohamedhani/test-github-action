@@ -1,4 +1,12 @@
+<<<<<<< HEAD
 name: CI
+=======
+<<<<<<< Updated upstream
+name: Continous Integration Wotkflow
+=======
+name: Continous Integration
+>>>>>>> Stashed changes
+>>>>>>> 2c54d23 (refactor)
 on:
   push:
     branches:

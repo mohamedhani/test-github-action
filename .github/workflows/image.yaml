@@ -27,12 +27,6 @@ jobs:
         if [[ ${{ github.event_name }} == "pull_request" ]]
         then 
           BRANCH_NAME=$( echo ${{ github.event.pull_request.head.ref }} | cut -d "/"  -f 2)
-        elif [[ ${{ github.event_name }} == "push" && ${{ github.ref_name }} != "master" ]]
-        then
-          BRANCH_NAME=$( echo ${{ github.ref_name }} | cut -d "/"  -f 2)
-        fi
-        if [[ ${{ github.ref_name }} != "master"  ]]
-        then 
           NEW_TAG=$LATEST_TAG-$BRANCH_NAME-snapshot
         elif [[ ${{ github.ref_name }} == "master" && ${{ github.sha }} == $LATEST_TAG_COMMIT ]]
         then 
@@ -49,7 +43,6 @@ jobs:
       create-new-tag:  ${{ steps.env-tag.outputs.CREATE_NEW_TAG }}
       branch-name: ${{ steps.env-tag.outputs.BRANCH_NAME }}
   build-and-push:
-    if: ${{ ( github.event_name	 == 'push' &&  github.ref_name	 == 'master') || github.event_name	 == 'pull_request'   }}
     uses: ./.github/workflows/docker-reuse.yaml
     secrets: inherit
     needs:
