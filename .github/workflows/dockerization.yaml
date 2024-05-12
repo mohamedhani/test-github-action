@@ -54,7 +54,6 @@ jobs:
             pull_number: ${github.event.number},
             owner: context.repo.owner,
             repo: context.repo.repo,
-            pull_number
             body: 'The Deployment of 
                   Thank You'
           })
