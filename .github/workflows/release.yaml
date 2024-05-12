@@ -23,7 +23,7 @@ jobs:
     - get-version
     with:
       push: false
-      tag: 'v${{ needs.get-version.outputs.version }}'
+      tag: '${{ needs.get-version.outputs.version }}'
       image-name: test-github-action
   build-and-push-helm:
     needs:
@@ -34,5 +34,5 @@ jobs:
     - run: |
         helm package charts/test-github-action/
         echo ${{ secrets.DOCKERHUB_TOKEN }} | helm registry login registry-1.docker.io -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin 
-        helm push test-github-action-v${{ needs.get-version.outputs.version }}.tgz  oci://registry-1.docker.io/${{ secrets.DOCKERHUB_USERNAME }}
+        helm push test-github-action-${{ needs.get-version.outputs.version }}.tgz  oci://registry-1.docker.io/${{ secrets.DOCKERHUB_USERNAME }}
 
