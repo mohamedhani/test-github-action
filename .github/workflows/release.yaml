@@ -22,7 +22,7 @@ jobs:
     needs:
     - get-version
     with:
-      push: false
+      push: true
       tag: '${{ needs.get-version.outputs.version }}'
       image-name: test-github-action
   build-and-push-helm:
