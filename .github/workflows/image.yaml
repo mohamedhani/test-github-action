@@ -32,7 +32,7 @@ jobs:
         else
           TAG=$(echo $LATEST_TAG  | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
         fi
-        echo "IMAGE_TAG=$NEW_TAG" >> "$GITHUB_OUTPUT"
+        echo "IMAGE_TAG=$TAG" >> "$GITHUB_OUTPUT"
 
     outputs:
       image-tag: ${{ steps.env-tag.outputs.IMAGE_TAG }}
