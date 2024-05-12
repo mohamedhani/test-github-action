@@ -77,7 +77,7 @@ jobs:
         aws-region: ${{ vars.AWS_REGION }}
         role-session-name: GitHub_to_AWS_via_FederatedOIDC
     - name: Configure Kubernetes client
-      uses: silverlyra/setup-aws-eks@v0.1
+      uses: silverlyra/setup-aws-eks@v1.0
       with:
         cluster: ${{vars.EKS_CLUSTER_NAME}}
     - name: Deployment
@@ -88,15 +88,19 @@ jobs:
         --set ingress.environment="dev" \
         --set ingress.annotations."alb\.ingress\.kubernetes\.io/certificate-arn"="${{vars.CERTIFICATE_ARN}}" \
         --set image.tag="${{ needs.get-env-tag.outputs.image-tag }}"
-    # - name: 'Deploy'
-    #   uses: 'deliverybot/helm@v1'
-    #   with:
-    #     release: 'test-github-action-${{ needs.get-env-tag.outputs.branch-name }}'
-    #     namespace: '${{ vars.NAMESPACE }}'
-    #     chart: './charts/test-github-action'
-    #     values: |
-    #       ingress:
-    #         hostName: test-github-action-${{ needs.get-env-tag.outputs.branch-name }}
-    #         environment: dev
-    #       image:
-    #         tag: ${{ needs.get-env-tag.outputs.image-tag }}
+        --wait
+        echo '${{ toJSON(github.event)}}' | jq
+    # - name: Update Pull Request
+    #   if: always()
+    #   - uses: actions/github-script@v6
+    #     with:
+    #       script: |
+    #         github.rest.pulls.createReviewComment({
+    #           issue_number: context.issue.number,
+    #           owner: context.repo.owner,
+    #           repo: context.repo.repo,
+    #           pull_number
+    #           body: 'The Deployment of ${{ test-github-action-${{ needs.get-env-tag.outputs.branch-name}} is ${{job.status}}
+    #                  URL is https://test-github-action-${{ needs.get-env-tag.outputs.branch-name}}.dev.titanium-me.info
+    #                  Thank You'
+    #         })
