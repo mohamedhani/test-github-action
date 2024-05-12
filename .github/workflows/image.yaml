@@ -44,7 +44,7 @@ jobs:
       tag: ${{ needs.get-env-tag.outputs.image-tag }}
       image-name: test-github-action
   stage-deploy:
-    if: ${{ github.event_name	 == 'pull_request'  && startsWith( github.event.pull_request.head.ref, 'feature/'' )  }}
+    if: ${{ github.event_name	 == 'pull_request'  && startsWith( github.event.pull_request.head.ref, 'feature/' )  }}
     permissions:
       id-token: write   # This is required for requesting the JWT
       issues: write
