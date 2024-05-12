@@ -28,7 +28,7 @@ jobs:
           TAG=$BRANCH_NAME-$CURRENT_VERSION
         elif [[ ${{ github.ref_name }} == "master" && ${{ github.sha }} == $CURRENT_VERSION ]]
         then 
-          TAG=$CURRENT_VERSION-${{github.sha::8}}
+          TAG=$CURRENT_VERSION-${GITHUB_SHA::8}
         else
           TAG=$(echo $LATEST_TAG  | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
         fi
