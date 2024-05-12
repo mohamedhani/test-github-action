@@ -1,0 +1,37 @@
+name: Release New Version
+on:
+  push:
+    tags:        
+    - v*
+jobs:
+  get-version:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4 
+    - name: Get Image Tag
+      id: env-tag
+      run : |
+        CURRENT_VERSION=$(cat VERSION)
+        echo "CURRENT_VERSION=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
+    outputs:
+      version: ${{ steps.env-tag.outputs.CURRENT_VERSION }}
+
+  build-and-push:
+    uses: ./.github/workflows/docker-reuse.yaml
+    secrets: inherit
+    needs:
+    - get-version
+    with:
+      push: false
+      tag: 'v${{ needs.get-version.outputs.version }}'
+      image-name: test-github-action
+  build-and-push-helm:
+    needs:
+    - get-version
+    runs-on: ubuntu-latest
+    steps:
+      run: |
+        helm package charts/test-github-action/
+        echo ${{ secrets.DOCKERHUB_TOKEN }} | helm registry login registry-1.docker.io -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin 
+        helm push test-github-action-v${{ needs.get-version.outputs.version }}.tgz  oci://registry-1.docker.io/${{ secrets.DOCKERHUB_USERNAME }}
+
