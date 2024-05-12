@@ -1,10 +1,11 @@
 name: Init Release
 on:
   workflow_dispatch:
-    tag:
-      description: 'Release Version(Should not contains "v")'
-      required: true
-      type: string
+    inputs:
+      tag:
+        description: 'Release Version(Should not contains "v")'
+        required: true
+        type: string
 jobs:
   release:
     runs-on: ubuntu-latest
