@@ -29,7 +29,6 @@ jobs:
         elif [[ ${{ github.ref_name }} == "master" ]]
         then 
           TAG=$CURRENT_VERSION-${GITHUB_SHA::8}
-        else
         fi
         echo "IMAGE_TAG=$TAG" >> "$GITHUB_OUTPUT"
 
