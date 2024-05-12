@@ -36,9 +36,12 @@ jobs:
         git stash
     - name: create new release branch 
       run: |
+        git config --global user.email "${{ github.actor }}@gmail.com"
+        git config --global user.name "${{ github.actor }}"
         git checkout -b release/${{ inputs.tag }}
         git stash pop 
-        git add . 
+        git add .
+
         git commit -m "create release ${{ inputs.tag }}"
         git push --set-upstream origin release/${{ inputs.tag }}
 
