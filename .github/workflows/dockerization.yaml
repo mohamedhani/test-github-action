@@ -51,7 +51,7 @@ jobs:
       with:
         script: |
           github.rest.pulls.createReviewComment({
-            pull_number: github.event.number,
+            pull_number: ${github.event.number},
             owner: context.repo.owner,
             repo: context.repo.repo,
             pull_number
