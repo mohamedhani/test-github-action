@@ -31,7 +31,7 @@ service:
 ingress:
   enabled: true
   className: "nginx"
-  annotations: {}
+  annotations: 
     alb.ingress.kubernetes.io/load-balancer-name: project-alb
     alb.ingress.kubernetes.io/group.name: project-group
     alb.ingress.kubernetes.io/scheme: internet-facing
