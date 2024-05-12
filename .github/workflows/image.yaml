@@ -20,28 +20,22 @@ jobs:
     - name: Get Image Tag
       id: env-tag
       run : |
-        LATEST_TAG=$( git tag --list | tail -1 )
-        LATEST_TAG_COMMIT=$(git rev-list -n 1 tags/$LATEST_TAG)
-        CREATE_NEW_TAG=false
-        BRANCH_NAME=""
+        CURRENT_VERSION=$(cat VERSION)
+        BRANCH_NAME="master"
         if [[ ${{ github.event_name }} == "pull_request" ]]
         then 
-          BRANCH_NAME=$( echo ${{ github.event.pull_request.head.ref }} | cut -d "/"  -f 2)
-          NEW_TAG=$LATEST_TAG-$BRANCH_NAME-snapshot
-        elif [[ ${{ github.ref_name }} == "master" && ${{ github.sha }} == $LATEST_TAG_COMMIT ]]
+          BRANCH_NAME=$( echo ${{ github.event.pull_request.head.ref }} | tr "/" "-" )
+          TAG=$BRANCH_NAME-$CURRENT_VERSION
+        elif [[ ${{ github.ref_name }} == "master" && ${{ github.sha }} == $CURRENT_VERSION ]]
         then 
-          NEW_TAG=$LATEST_TAG
+          TAG=$CURRENT_VERSION-${{github.sha::8}}
         else
-          NEW_TAG=$(echo $LATEST_TAG   | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
-          CREATE_NEW_TAG=true
+          TAG=$(echo $LATEST_TAG  | awk -F. -v OFS=. 'NF==1{print ++$NF}; NF>1{if(length($NF+1)>length($NF))$(NF-1)++; $NF=sprintf("%0*d", length($NF), ($NF+1)%(10^length($NF))); print}')
         fi
         echo "IMAGE_TAG=$NEW_TAG" >> "$GITHUB_OUTPUT"
-        echo "CREATE_NEW_TAG=$CREATE_NEW_TAG" >> "$GITHUB_OUTPUT"
-        echo "BRANCH_NAME=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
+
     outputs:
       image-tag: ${{ steps.env-tag.outputs.IMAGE_TAG }}
-      create-new-tag:  ${{ steps.env-tag.outputs.CREATE_NEW_TAG }}
-      branch-name: ${{ steps.env-tag.outputs.BRANCH_NAME }}
   build-and-push:
     uses: ./.github/workflows/docker-reuse.yaml
     secrets: inherit
@@ -75,9 +69,9 @@ jobs:
         cluster: ${{vars.EKS_CLUSTER_NAME}}
     - name: Deployment
       run: |
-        helm upgrade --install test-github-action-${{ needs.get-env-tag.outputs.branch-name }} ./charts/test-github-action \
+        helm upgrade --install test-github-action-${{ needs.get-env-tag.outputs.image-tag }} ./charts/test-github-action \
         --namespace dev \
-        --set ingress.hostName="test-github-action-${{ needs.get-env-tag.outputs.branch-name }}" \
+        --set ingress.hostName="test-github-action-${{ needs.get-env-tag.outputs.image-tag }}" \
         --set ingress.environment="dev" \
         --set ingress.annotations."alb\.ingress\.kubernetes\.io/certificate-arn"="${{vars.CERTIFICATE_ARN}}" \
         --set image.tag="${{ needs.get-env-tag.outputs.image-tag }}" \
@@ -101,7 +95,6 @@ jobs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             body:  `PR ${{github.event.number}} Deployment is ${{job.status}}
-                    URL is https://test-github-action-${{ needs.get-env-tag.outputs.branch-name}}.dev.titanium-me.info
+                    URL is https://test-github-action-${{needs.get-env-tag.outputs.image-tag}}.dev.titanium-me.info
                     Thank You`
           })
-        debug: true

@@ -1,0 +1,43 @@
+name: Init Release
+on:
+  workflow_dispatch:
+    tag:
+      description: 'Release Version(Should not contains "v")'
+      required: true
+      type: string
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4 
+      with:
+        fetch-tags: true
+        fetch-depth: 0
+    - name: check input version
+      run: |
+        
+        if  echo "${{ inputs.tag }}"  | grep "^v";then
+          echo "::error:: Input Verison start with 'v'"
+          exit 1
+        fi
+    
+    - name: Update Version
+      run: |
+        echo "v${{ inputs.tag }}" > ./VERSION
+        git stash
+    - name: Update helm chart
+      run: |
+        git stash pop
+        sudo add-apt-repository ppa:rmescandon/yq -y
+        sudo apt update
+        sudo apt install yq -y
+        yq eval -i  '.image.tag = "v${{ inputs.tag }}"' ./charts/test-github-action/values.yaml
+        git stash
+    - name: create new release branch 
+      run: |
+        git checkout -b release/${{ inputs.tag }}
+        git stash pop 
+        git add . 
+        git commit -m "create release ${{ inputs.tag }}"
+        git push --set-upstream origin release/${{ inputs.tag }}
+
