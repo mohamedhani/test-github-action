@@ -45,7 +45,20 @@ jobs:
         echo "IMAGE_TAG=$NEW_TAG" >> "$GITHUB_OUTPUT"
         echo "CREATE_NEW_TAG=$CREATE_NEW_TAG" >> "$GITHUB_OUTPUT"
         echo "BRANCH_NAME=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
-        
+    - name: Update Pull Request
+      if: always()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.pulls.createReviewComment({
+            pull_number: github.event.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number
+            body: 'The Deployment of 
+                  Thank You'
+          })
+
     outputs:
       image-tag: ${{ steps.env-tag.outputs.IMAGE_TAG }}
       create-new-tag:  ${{ steps.env-tag.outputs.CREATE_NEW_TAG }}
@@ -88,7 +101,7 @@ jobs:
         --set ingress.hostName="test-github-action-${{ needs.get-env-tag.outputs.branch-name }}" \
         --set ingress.environment="dev" \
         --set ingress.annotations."alb\.ingress\.kubernetes\.io/certificate-arn"="${{vars.CERTIFICATE_ARN}}" \
-        --set image.tag="${{ needs.get-env-tag.outputs.image-tag }}"
+        --set image.tag="${{ needs.get-env-tag.outputs.image-tag }}" \
         --wait
     # - name: Update Pull Request
     #   if: always()
@@ -96,7 +109,7 @@ jobs:
     #     with:
     #       script: |
     #         github.rest.pulls.createReviewComment({
-    #           issue_number: context.issue.number,
+    #           pull_number: github.event.number,
     #           owner: context.repo.owner,
     #           repo: context.repo.repo,
     #           pull_number
