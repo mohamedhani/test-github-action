@@ -20,6 +20,7 @@ jobs:
     - name: Get Image Tag
       id: env-tag
       run : |
+        echo '${{ toJSON(github.event)}}' | jq
         LATEST_TAG=$( git tag --list | tail -1 )
         LATEST_TAG_COMMIT=$(git rev-list -n 1 tags/$LATEST_TAG)
         CREATE_NEW_TAG=false
@@ -77,7 +78,7 @@ jobs:
         aws-region: ${{ vars.AWS_REGION }}
         role-session-name: GitHub_to_AWS_via_FederatedOIDC
     - name: Configure Kubernetes client
-      uses: silverlyra/setup-aws-eks@v1.0
+      uses: silverlyra/setup-aws-eks@v0.1
       with:
         cluster: ${{vars.EKS_CLUSTER_NAME}}
     - name: Deployment
@@ -89,7 +90,6 @@ jobs:
         --set ingress.annotations."alb\.ingress\.kubernetes\.io/certificate-arn"="${{vars.CERTIFICATE_ARN}}" \
         --set image.tag="${{ needs.get-env-tag.outputs.image-tag }}"
         --wait
-        echo '${{ toJSON(github.event)}}' | jq
     # - name: Update Pull Request
     #   if: always()
     #   - uses: actions/github-script@v6
