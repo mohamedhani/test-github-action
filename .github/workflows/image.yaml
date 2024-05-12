@@ -76,7 +76,7 @@ jobs:
         --wait
 
   update-pull-request:
-    if: ${{ github.event_name	 == 'pull_request'   }}
+    if: ${{ github.event_name	 == 'pull_request'  && startsWith( github.event.pull_request.head.ref, "feature/" )  }}
     needs:
     - stage-deploy
     - get-env-tag
