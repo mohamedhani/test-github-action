@@ -32,8 +32,16 @@ ingress:
   enabled: true
   className: "nginx"
   annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+    alb.ingress.kubernetes.io/load-balancer-name: project-alb
+    alb.ingress.kubernetes.io/group.name: project-group
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/healthcheck-path: '/healthz'
+    alb.ingress.kubernetes.io/healthcheck-protocol: 'HTTP'
+    alb.ingress.kubernetes.io/certificate-arn: 'arn:aws:acm:us-east-1:464498973176:certificate/35bb1313-7fdb-4c04-904d-17364af08684'
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    external-dns.alpha.kubernetes.io/ttl: "60"
   hostName: ""
   domain: "home.titanium-me.info"
   # environment should be dev, preprod, or prod

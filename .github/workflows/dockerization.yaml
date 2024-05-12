@@ -82,6 +82,7 @@ jobs:
         --namespace dev \
         --set ingress.hostName="test-github-action-${{ needs.get-env-tag.outputs.branch-name }}" \
         --set ingress.environment="dev" \
+        --set ingress.annotations.alb\.ingress\.kubernetes.io/certificate-arn=${{vars.CERTIFICATE_ARN}} \
         --set image.tag="${{ needs.get-env-tag.outputs.image-tag }}"
     # - name: 'Deploy'
     #   uses: 'deliverybot/helm@v1'
