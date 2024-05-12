@@ -57,6 +57,7 @@ jobs:
             body: 'The Deployment of 
                   Thank You'
           })
+        debug: true
 
     outputs:
       image-tag: ${{ steps.env-tag.outputs.IMAGE_TAG }}
