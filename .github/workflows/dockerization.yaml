@@ -45,19 +45,6 @@ jobs:
         echo "IMAGE_TAG=$NEW_TAG" >> "$GITHUB_OUTPUT"
         echo "CREATE_NEW_TAG=$CREATE_NEW_TAG" >> "$GITHUB_OUTPUT"
         echo "BRANCH_NAME=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
-    - name: Update Pull Request
-      if: always()
-      uses: actions/github-script@v6
-      with:
-        script: |
-          github.rest.issues.createComment({
-            issue_number:  ${{github.event.number}},
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: 'The Deployment of Thank You'
-          })
-        debug: true
-
     outputs:
       image-tag: ${{ steps.env-tag.outputs.IMAGE_TAG }}
       create-new-tag:  ${{ steps.env-tag.outputs.CREATE_NEW_TAG }}
@@ -116,3 +103,17 @@ jobs:
     #                  URL is https://test-github-action-${{ needs.get-env-tag.outputs.branch-name}}.dev.titanium-me.info
     #                  Thank You'
     #         })
+    - name: Update Pull Request
+      if: always()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number:  ${{github.event.number}},
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body:  `PR ${{github.event.number}} Deployment is ${{job.status}}
+                    URL is https://test-github-action-${{ needs.get-env-tag.outputs.branch-name}}.dev.titanium-me.info
+                    Thank You`
+          })
+        debug: true
