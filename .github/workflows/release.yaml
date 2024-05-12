@@ -30,6 +30,7 @@ jobs:
     - get-version
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v4 
     - run: |
         helm package charts/test-github-action/
         echo ${{ secrets.DOCKERHUB_TOKEN }} | helm registry login registry-1.docker.io -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin 
