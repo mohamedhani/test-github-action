@@ -41,6 +41,7 @@ ingress:
     alb.ingress.kubernetes.io/certificate-arn: 'arn:aws:acm:us-east-1:464498973176:certificate/35bb1313-7fdb-4c04-904d-17364af08684'
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/load-balancer-attributes: deletion_protection.enabled=true
     external-dns.alpha.kubernetes.io/ttl: "60"
   hostName: ""
   domain: "home.titanium-me.info"
